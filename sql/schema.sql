@@ -6,13 +6,24 @@ CREATE TABLE users (
     last_name VARCHAR(100),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE project(
+
+CREATE TABLE profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT NOT NULL UNIQUE,
+    bio TEXT,
+    avatar VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE projects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
     description TEXT,
     owner_id INT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE project_members (
     project_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -21,11 +32,12 @@ CREATE TABLE project_members (
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE TABLE task(
+
+CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id NOT NULL,
+    project_id INT NOT NULL,
     assigned_to INT NULL,
-    title VARCHAR(255) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
     description TEXT,
     is_done BOOLEAN DEFAULT FALSE,
     priority VARCHAR(50) DEFAULT 'medium',
@@ -34,12 +46,13 @@ CREATE TABLE task(
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL
 );
-CREATE TABLE comments(
+
+CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     owner_id INT NOT NULL,
     task_id INT NOT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE
-)
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+);
