@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once '../config/database.php';
 
 $error = '';
@@ -15,9 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    password_verify($password, $user['password']);
      if ($user && password_verify($password, $user['password'])) {
-        echo "Connexion réussie";
+        
+        $_SESSION['user_id'] = $user['id'];
+        header('Location: ../dashboard.php');
+        exit;
     } else {
         $error = "Email ou mot de passe incorrect.";
     }
@@ -46,7 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <div class="inscription_card">
             <h1>Connexion</h1>
-
+            <?php if (!empty($error)): ?>
+                <p class="error_message"><?= htmlspecialchars($error) ?></p>
+            <?php endif; ?>
 
             <div class="input_group">
                 <i class="bi bi-envelope"></i>

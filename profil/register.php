@@ -39,10 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <div class="inscription_card">
             <h1>Inscription</h1>
-
+            <?php if (!empty($error)): ?>
+                <p class="error_message"><?= htmlspecialchars($error) ?></p>
+            <?php endif; ?>
             <div class="input_group">
                 <i class="bi bi-person"></i>
                 <input type="text" name="first_name" placeholder="Prénom" required>
