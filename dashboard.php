@@ -22,7 +22,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 $sql = "SELECT * FROM projects WHERE owner_id = :owner_id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
-    'owner_id' => $_SESSION['user_id']
+    'owner_id' => $userId
 ]);
 
 $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);

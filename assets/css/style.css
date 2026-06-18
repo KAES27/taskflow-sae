@@ -180,21 +180,6 @@
     font-size: 18px;
 }
 
-.projects_area {
-    margin-top: 30px;
-    min-height: 250px;
-
-    background-color: white;
-    border-radius: 18px;
-    border: 1px dashed #d1d5db;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-}
-
 .empty_message {
     grid-column: 1 / -1;
     align-self: center;
@@ -203,20 +188,29 @@
     font-size: 16px;
 }
 
+.projects_area {
+    margin-top: 30px;
+    padding: 30px;
+
+    background-color: white;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    box-sizing: border-box;
+}
+
 .project_card {
-     text-decoration: none;
+    display: block;
+    text-decoration: none;
     color: inherit;
     cursor: pointer;
     min-height: 220px;
     padding: 26px;
+    margin-bottom: 25px;
     border-radius: 18px;
     border: 1px solid #dfe5e2;
     background: linear-gradient(180deg, #ffffff, #f7fbf8);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
     transition: 0.2s ease;
-    margin: 8px;
-    display: flex;
-    flex-direction: column;
 }
 
 .project_card:hover {
@@ -239,11 +233,12 @@
     color: #6b7280;
     font-size: 16px;
     line-height: 1.6;
-   
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .empty_message {
