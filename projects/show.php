@@ -37,12 +37,13 @@ if (isset($_POST['complete_task_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['member_email'])) {
+
     $memberEmail = trim($_POST['member_email']);
     $projectId = $_GET['id'];
 
-    // Chercher l'utilisateur avec son email
     $sql = "SELECT id FROM users WHERE email = :email";
     $stmt = $pdo->prepare($sql);
+
     $stmt->execute([
         'email' => $memberEmail
     ]);
@@ -50,16 +51,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['member_email'])) {
     $member = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($member) {
-        // Ajouter cet utilisateur au projet
-        $sql = "INSERT INTO project_members (project_id, user_id)
-                VALUES (:project_id, :user_id)";
+
+        $sql = "SELECT *
+                FROM project_members
+                WHERE project_id = :project_id
+                AND user_id = :user_id";
 
         $stmt = $pdo->prepare($sql);
+
         $stmt->execute([
             'project_id' => $projectId,
             'user_id' => $member['id']
         ]);
+
+        $alreadyMember = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($alreadyMember) {
+
+            $member_error = "Cet utilisateur est déjà membre du projet.";
+
+        } else {
+
+            $sql = "INSERT INTO project_members (project_id, user_id)
+                    VALUES (:project_id, :user_id)";
+
+            $stmt = $pdo->prepare($sql);
+
+            $stmt->execute([
+                'project_id' => $projectId,
+                'user_id' => $member['id']
+            ]);
+
+            $member_success = "Membre ajouté avec succès.";
+        }
+
     } else {
+
         $member_error = "Aucun utilisateur ne possède cet email.";
     }
 }
@@ -112,6 +139,8 @@ $stmt->execute([
 ]);
 
 $project = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$isOwner = ($project['owner_id'] == $_SESSION['user_id']);
 
 $sql = "SELECT users.id, users.first_name, users.last_name, users.email
         FROM project_members
@@ -167,7 +196,7 @@ if (!$project) {
                     <i class="bi bi-arrow-left"></i>
                     Retour au tableau de bord
                 </a>
-
+                <?php if ($isOwner): ?>
                 <form action="delete.php" method="POST">
                     <input
                         type="hidden"
@@ -180,6 +209,7 @@ if (!$project) {
                         Supprimer le projet
                     </button>
                 </form>
+                <?php endif; ?>
             </div>
 
             <h1><?= htmlspecialchars($project['title']) ?></h1>
@@ -200,6 +230,8 @@ if (!$project) {
         </section>
 
         <section class="project_collaboration_section">
+
+            <?php if ($isOwner): ?>
 
             <div class="members_block">
                 <h2>
@@ -264,9 +296,10 @@ if (!$project) {
 
                 </div>
             </div>
+            <?php endif; ?>
 
         </section>
-
+        <?php if ($isOwner): ?>
         <section class="task_create_section">
             <h2>
                 <i class="bi bi-plus-circle"></i>
@@ -320,6 +353,8 @@ if (!$project) {
 
             </form>
         </section>
+
+        <?php endif; ?>
 
         <section class="tasks_section">
             <h2>
