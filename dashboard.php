@@ -19,10 +19,18 @@ $stmt->execute([
 
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$sql = "SELECT * FROM projects WHERE owner_id = :owner_id";
+$sql = "SELECT DISTINCT projects.*
+        FROM projects
+        LEFT JOIN project_members
+            ON projects.id = project_members.project_id
+        WHERE projects.owner_id = :user_id
+           OR project_members.user_id = :user_id
+        ORDER BY projects.created_at DESC";
+
 $stmt = $pdo->prepare($sql);
+
 $stmt->execute([
-    'owner_id' => $userId
+    'user_id' => $userId
 ]);
 
 $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
