@@ -96,6 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task_title'])) {
     $taskTitle = trim($_POST['task_title']);
     $taskDescription = trim($_POST['task_description']);
     $priority = $_POST['priority'];
+    $assignedTo = !empty($_POST['assigned_to'])
+    ? $_POST['assigned_to']
+    : null;
     $dueDate = !empty($_POST['due_date'])
         ? $_POST['due_date']
         : null;
@@ -103,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task_title'])) {
     $sql = "INSERT INTO tasks (
                 project_id,
                 title,
+                assigned_to,
                 description,
                 priority,
                 due_date
@@ -110,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task_title'])) {
             VALUES (
                 :project_id,
                 :title,
+                :assigned_to,
                 :description,
                 :priority,
                 :due_date
@@ -120,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task_title'])) {
     $stmt->execute([
         'project_id' => $_GET['id'],
         'title' => $taskTitle,
+        'assigned_to' => $assignedTo,
         'description' => $taskDescription,
         'priority' => $priority,
         'due_date' => $dueDate
@@ -159,9 +165,14 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-$sql = "SELECT * FROM tasks
-        WHERE project_id = :project_id
-        ORDER BY created_at DESC";
+$sql = "SELECT tasks.*,
+               users.first_name AS assigned_first_name,
+               users.last_name AS assigned_last_name
+        FROM tasks
+        LEFT JOIN users
+            ON tasks.assigned_to = users.id
+        WHERE tasks.project_id = :project_id
+        ORDER BY tasks.created_at DESC";
 
 $stmt = $pdo->prepare($sql);
 
@@ -448,6 +459,7 @@ if (!$project) {
                                     </button>
                                 </form>
                            
+                            <?php if ($isOwner): ?>
 
                             <form method="POST">
                                 <input
@@ -461,6 +473,8 @@ if (!$project) {
                                     Supprimer
                                 </button>
                             </form>
+
+                            <?php endif; ?>
 
                         </div>
 
