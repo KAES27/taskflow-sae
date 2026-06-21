@@ -76,7 +76,7 @@ if (!$isOwner && !$isMember) {
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['delete_task_id'])
-    && $isOwner
+    
 ) {
     $sql = "DELETE FROM tasks
             WHERE id = :id
@@ -90,10 +90,7 @@ if (
     ]);
 }
 
-/*
-   5. Terminer / remettre à faire
-   Owner seulement
-*/
+/*changer de role*/ 
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['change_role_user_id'])
@@ -118,11 +115,14 @@ if (
         ]);
     }
 }
-
+/*
+   5. Terminer / remettre à faire
+  
+*/
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['complete_task_id'])
-    && $isOwner
+    
 ) {
     $sql = "UPDATE tasks
             SET is_done = NOT is_done
@@ -137,10 +137,10 @@ if (
     ]);
 }
 
-/* =========================
+/* 
    6. Ajouter un membre
    Owner seulement
-========================= */
+*/
 
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -215,15 +215,14 @@ if (
     }
 }
 
-/* =========================
+/* 
    7. Ajouter une tâche
-   Owner seulement
-========================= */
+  */
 
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['task_title'])
-    && $isOwner
+    
 ) {
     $taskTitle = trim($_POST['task_title']);
     $taskDescription = trim($_POST['task_description']);
@@ -311,10 +310,10 @@ if (
     }
 }
 
-/* =========================
+/*
    8. Récupérer les membres
    Le owner est inclus aussi
-========================= */
+ */
 
 $sql = "SELECT users.id,
                users.first_name,
@@ -348,9 +347,9 @@ $stmt->execute([
 
 $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-/* =========================
+/* 
    9. Récupérer les tâches
-========================= */
+ */
 
 $sql = "SELECT tasks.*,
                users.first_name AS assigned_first_name,
@@ -548,7 +547,7 @@ $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         </section>
 
-        <?php if ($isOwner): ?>
+        <?php if ($isOwner ||$member['role'] === 'manager'):  ?>
 
             <section class="task_create_section">
 
@@ -702,7 +701,7 @@ $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         </div>
 
-                        <?php if ($isOwner): ?>
+                        <?php if ($isOwner ||$member['role'] === 'manager'): ?>
 
                             <div class="task_actions">
 
